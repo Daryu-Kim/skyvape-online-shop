@@ -1,0 +1,96 @@
+@import 'base';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: all 200ms ease-in-out;
+}
+
+#__nuxt {
+  width: 100%;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.page-enter,
+.page-leave-to {
+  opacity: 0;
+}
+
+#__nuxt main {
+  padding: 4.8rem 2.4rem;
+  flex: 1;
+}
+
+input[type=checkbox] {
+  display: none;
+}
+
+.inner {
+  padding: 0 2.4rem !important;
+}
+
+body {
+  -ms-overflow-style: none; /* 인터넷 익스플로러 */
+  scrollbar-width: none; /* 파이어폭스 */
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  outline: none;
+  border: none;
+  width: 2.8rem;
+  height: 2.8rem;
+  background: none;
+  cursor: pointer;
+}
+
+
+
+@media (max-width: 424px) {
+  html {
+    font-size: 10px;
+  }
+}
+
+@media (min-width: 425px) and (max-width: 767px) {
+  html {
+    font-size: 10px;
+  }
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    align-items: center;
+  }
+
+  #__nuxt main {
+    margin: auto;
+    width: 100%;
+    max-width: 1024px;
+  }
+}

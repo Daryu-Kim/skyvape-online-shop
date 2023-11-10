@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+  --vt-c-white: #ffffff;
+  --vt-c-white-soft: #aaa;
+  --vt-c-white-mute: #666;
+
+  --vt-c-black: #000814;
+  --vt-c-black-soft: #101018;
+  --vt-c-black-mute: #202028;
+
+  --vt-c-divider-light-1: var(--vt-c-black-soft);
+  --vt-c-divider-light-2: var(--vt-c-black-mute);
+  --vt-c-divider-dark-1: var(--vt-c-white-soft);
+  --vt-c-divider-dark-2: var(--vt-c-white-mute);
+
+  --vt-c-text-light: #202020;
+  --vt-c-text-dark: #FFF;
+
+  --vt-c-text-light-1: var(--vt-c-black-soft);
+  --vt-c-text-light-2: var(--vt-c-black-mute);
+  --vt-c-text-dark-1: var(--vt-c-white-soft);
+  --vt-c-text-dark-2: var(--vt-c-white-mute);
+
+  --vt-c-accent-light: #FFC300;
+  --vt-c-accent-dark: #FFD60A;
+}
+
+/* semantic color variables for this project */
+:root {
+  --color-background: var(--vt-c-white);
+  --color-background-soft: var(--vt-c-white-soft);
+  --color-background-mute: var(--vt-c-white-mute);
+
+  --color-border: var(--vt-c-divider-light-1);
+  --color-border-hover: var(--vt-c-divider-light-2);
+
+  --color-heading: var(--vt-c-text-light-1);
+  --color-text: var(--vt-c-text-light);
+  --color-text-inverse: var(--vt-c-text-dark);
+
+  --color-accent: var(--vt-c-accent-light);
+
+  --section-gap: 160px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--vt-c-black);
+    --color-background-soft: var(--vt-c-black-soft);
+    --color-background-mute: var(--vt-c-black-mute);
+
+    --color-border: var(--vt-c-divider-dark-1);
+    --color-border-hover: var(--vt-c-divider-dark-2);
+
+    --color-heading: var(--vt-c-text-dark-1);
+    --color-text: var(--vt-c-text-dark);
+    --color-text-inverse: var(--vt-c-text-light);
+
+    --color-accent: var(--vt-c-accent-dark);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  font-family: 'Noto Sans KR', sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

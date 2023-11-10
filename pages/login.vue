@@ -5,26 +5,22 @@ import IconFacebook from "~/components/icons/IconFacebook.vue";
 import IconGoogle from "~/components/icons/IconGoogle.vue";
 import IconKakao from "~/components/icons/IconKakao.vue";
 import TopBanner from "~/components/TopBanner.vue";
-import BaseHeader from "~/components/BaseHeader.vue";
 import {ref} from "vue";
 import BaseFooter from "~/components/BaseFooter.vue";
-import {loginEmailAndPasswordAPI, resetPasswordAPI} from "~/functions/FirebaseAuth";
+import {
+  loginEmailAndPasswordAPI,
+  loginFacebookAccountAPI,
+  loginSocialAccountAPI,
+  resetPasswordAPI
+} from "~/scripts/FirebaseAuth";
 
 let userInputID = ref(''), userInputPW = ref('');
 const isShowModal = ref(false);
 
 async function joinSocialAccount(platform: string) {
-  switch (platform) {
-    case "apple":
-      break;
-    case "facebook":
-      break;
-    case "google":
-      break;
-    case "kakao":
-      break;
-    default:
-      break;
+  const resultLoginData = await loginSocialAccountAPI(platform);
+  if (resultLoginData) {
+    $nuxt.$router.back();
   }
 }
 
@@ -40,7 +36,7 @@ async function loginEmailAccount() {
 <template>
   <div class="wrapper">
     <TopBanner />
-    <BaseHeader />
+    <BasePCHeader />
     <main>
       <article class="skyvape-join-msg-article">
         <section class="title-section">
@@ -77,19 +73,19 @@ async function loginEmailAccount() {
             <div></div>
           </div>
           <div class="button-div">
-            <button class="apple">
+            <button class="apple hide">
               <IconApple />
               <p>Apple 계정으로 로그인</p>
             </button>
-            <button class="facebook">
+            <button class="facebook" @click="joinSocialAccount('facebook')">
               <IconFacebook />
               <p>Facebook 계정으로 로그인</p>
             </button>
-            <button class="google">
+            <button class="google" @click="joinSocialAccount('google')">
               <IconGoogle />
               <p>Google 계정으로 로그인</p>
             </button>
-            <button class="kakao">
+            <button class="kakao hide">
               <IconKakao />
               <p>Kakao 계정으로 로그인</p>
             </button>

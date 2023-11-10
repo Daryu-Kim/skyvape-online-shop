@@ -1,5 +1,5 @@
 import {initializeApp} from "firebase/app";
-import {firebaseConfig} from "~/functions/Firebase";
+import {firebaseConfig} from "~/scripts/Firebase";
 
 export const actions = {
   nuxtServerInit(vuexContext, context) {

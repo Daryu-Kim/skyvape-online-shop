@@ -2,9 +2,18 @@
 import TopBanner from "~/components/TopBanner.vue";
 import BaseHeader from "~/components/BasePCHeader.vue";
 import BaseFooter from "~/components/BaseFooter.vue";
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import IconVisibleBtn from "~/components/icons/IconVisibleBtn.vue";
 import {showErrorToast} from "~/scripts/Toast";
+
+onMounted(function() {
+  const acceptData = localStorage.getItem("JOIN_ACCEPT_EVENT_SMS");
+  if (acceptData) return;
+  else {
+    showErrorToast("잘못된 접근입니다!");
+    $nuxt.$router.replace("/join");
+  }
+})
 
 const isShowTerms = ref(false),
   isShowPrivacy = ref(false),
@@ -47,7 +56,7 @@ function confirmCheckTerms() {
     <main>
       <article class="skyvape-join-msg-article">
         <section class="title-section">
-          <h1>SKYVAPE 회원 가입을 위해<br/>이용 약관에 동의해주세요!</h1>
+          <h1>SKYVAPE 회원 가입을 위해<br/>회원님의 정보를 입력해주세요!</h1>
         </section>
       </article>
       <article class="skyvape-join-form-article">

@@ -6,13 +6,13 @@ import { initializeApp } from "firebase/app";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 export const firebaseConfig = {
-  apiKey: "AIzaSyBbaJf49sGeL2pS7RxB85paw4ip-OHVXFM",
-  authDomain: "skyvape-online-test.firebaseapp.com",
-  projectId: "skyvape-online-test",
-  storageBucket: "skyvape-online-test.appspot.com",
-  messagingSenderId: "430579156304",
-  appId: "1:430579156304:web:719be17a0edb7b24d49855",
-  measurementId: "G-N8G6739HYY"
+  apiKey: "AIzaSyBZurOvRlOPqONMHNeybMR6AsBnZkWjbxs",
+  authDomain: "skyvape-online-mall-6b41a.firebaseapp.com",
+  projectId: "skyvape-online-mall-6b41a",
+  storageBucket: "skyvape-online-mall-6b41a.appspot.com",
+  messagingSenderId: "97482090311",
+  appId: "1:97482090311:web:0843cf2db3423cabae4e62",
+  measurementId: "G-LG5WL6M8XK"
 };
 
 // Initialize Firebase

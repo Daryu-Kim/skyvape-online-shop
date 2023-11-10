@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {defineProps, ref, defineEmits} from "vue";
-import {resetPasswordAPI} from "~/functions/FirebaseAuth";
+import {resetPasswordAPI} from "~/scripts/FirebaseAuth";
 
 const props = defineProps({
   isShowPrivacy: Boolean

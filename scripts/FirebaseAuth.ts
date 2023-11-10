@@ -1,5 +1,5 @@
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth"
-import {showErrorToast, showSuccessToast} from "~/functions/Toast";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, FacebookAuthProvider, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import {showErrorToast, showSuccessToast} from "~/scripts/Toast";
 
 export const auth = getAuth();
 export async function loginEmailAndPasswordAPI(email: string, password: string) {
@@ -10,6 +10,50 @@ export async function loginEmailAndPasswordAPI(email: string, password: string) 
   } catch (firebaseError) {
     checkAuthErrorMessage(firebaseError);
     return null;
+  }
+}
+
+export async function loginSocialAccountAPI(platform: string) {
+  try {
+    let provider : any;
+
+    switch (platform) {
+      case "facebook":
+        provider = new FacebookAuthProvider();
+        break;
+      case "google":
+        provider = new GoogleAuthProvider();
+        break;
+    }
+
+    const userCredential = await signInWithPopup(auth, provider);
+    if (userCredential) return userCredential.user;
+  } catch (firebaseError) {
+    checkAuthErrorMessage(firebaseError);
+    return false;
+  }
+}
+
+// @ts-ignore
+export async function loginFacebookAccountAPI() {
+  try {
+    const provider = new FacebookAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    if (userCredential) return userCredential.user;
+  } catch (firebaseError) {
+    checkAuthErrorMessage(firebaseError);
+    return false;
+  }
+}
+
+export async function loginGoogleAccountAPI() {
+  try {
+    const provider = new GoogleAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    if (userCredential) return userCredential.user;
+  } catch (firebaseError) {
+    checkAuthErrorMessage(firebaseError);
+    return false;
   }
 }
 

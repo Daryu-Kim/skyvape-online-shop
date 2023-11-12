@@ -2,12 +2,23 @@
 import IconMenuBtn from "~/components/icons/IconMenuBtn.vue";
 import IconSearchBtn from "~/components/icons/IconSearchBtn.vue";
 import IconCartBtn from "~/components/icons/IconCartBtn.vue";
+import UserLoginModal from "~/components/modals/UserLoginModal.vue";
+import {onBeforeMount, onMounted, ref} from "vue";
+import {readDocumentDataOnce} from "~/scripts/FirebaseFirestore";
+
+const isShowLoginModal = ref(false);
+const logoName = ref('');
+
+onBeforeMount(async () => {
+  const generalSettingData = await readDocumentDataOnce("SETTING", "GENERAL_SETTING");
+  logoName.value = generalSettingData.siteName;
+})
 </script>
 
 <template>
   <header>
     <article class="inner">
-      <nuxt-link class="skyvape-logo" to="/">SKYVAPE</nuxt-link>
+      <nuxt-link class="skyvape-logo" to="/">{{logoName}}</nuxt-link>
       <nav class="skyvape-menu">
         <ul>
           <li>
@@ -19,11 +30,12 @@ import IconCartBtn from "~/components/icons/IconCartBtn.vue";
         <button>
           <IconSearchBtn />
         </button>
-        <button @click="$nuxt.$router.push('/login')">
+        <button @click="isShowLoginModal = !isShowLoginModal">
           <IconCartBtn />
         </button>
       </div>
     </article>
+    <UserLoginModal :isShowModal="isShowLoginModal" @close="isShowLoginModal = false" />
   </header>
 </template>
 

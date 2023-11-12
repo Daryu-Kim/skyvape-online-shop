@@ -1,21 +1,59 @@
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, FacebookAuthProvider, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+  signInWithPopup,
+  createUserWithEmailAndPassword,
+  deleteUser
+} from "firebase/auth"
 import {showErrorToast, showSuccessToast} from "~/scripts/Toast";
+import {app} from "~/scripts/Firebase";
+import {createEmailUserDataAPI} from "~/scripts/FirebaseFirestore";
 
-export const auth = getAuth();
+export const auth = getAuth(app);
+
 export async function loginEmailAndPasswordAPI(email: string, password: string) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     console.log(userCredential);
     if (userCredential) return userCredential.user;
   } catch (firebaseError) {
-    checkAuthErrorMessage(firebaseError);
+    checkAuthErrorMessageAPI(firebaseError);
     return null;
+  }
+}
+
+export async function joinEmailAndPasswordAPI(
+  email: string,
+  password: string,
+  postalCode: string,
+  address1: string,
+  address2: string,
+  invitor: string,
+  name: string,
+  phoneNumber: string
+) {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    if (userCredential) {
+      const isCreatedUserData = createEmailUserDataAPI(
+        email, postalCode, address1, address2, invitor, name, phoneNumber
+      );
+      if (isCreatedUserData) {
+        return true;
+      }
+    }
+  } catch (firebaseError) {
+    checkAuthErrorMessageAPI(firebaseError);
+    return false;
   }
 }
 
 export async function loginSocialAccountAPI(platform: string) {
   try {
-    let provider : any;
+    let provider: any;
 
     switch (platform) {
       case "facebook":
@@ -29,7 +67,7 @@ export async function loginSocialAccountAPI(platform: string) {
     const userCredential = await signInWithPopup(auth, provider);
     if (userCredential) return userCredential.user;
   } catch (firebaseError) {
-    checkAuthErrorMessage(firebaseError);
+    checkAuthErrorMessageAPI(firebaseError);
     return false;
   }
 }
@@ -41,7 +79,7 @@ export async function loginFacebookAccountAPI() {
     const userCredential = await signInWithPopup(auth, provider);
     if (userCredential) return userCredential.user;
   } catch (firebaseError) {
-    checkAuthErrorMessage(firebaseError);
+    checkAuthErrorMessageAPI(firebaseError);
     return false;
   }
 }
@@ -52,7 +90,7 @@ export async function loginGoogleAccountAPI() {
     const userCredential = await signInWithPopup(auth, provider);
     if (userCredential) return userCredential.user;
   } catch (firebaseError) {
-    checkAuthErrorMessage(firebaseError);
+    checkAuthErrorMessageAPI(firebaseError);
     return false;
   }
 }
@@ -63,12 +101,12 @@ export async function resetPasswordAPI(email: string) {
     showSuccessToast("인증 이메일을 보냈습니다!\n메일을 확인해주세요!");
     return true;
   } catch (firebaseError) {
-    checkAuthErrorMessage(firebaseError);
+    checkAuthErrorMessageAPI(firebaseError);
     return false;
   }
 }
 
-export function checkAuthErrorMessage(error: any) {
+export function checkAuthErrorMessageAPI(error: any) {
   console.error(error.code);
   switch (error.code) {
     case "auth/invalid-email":
@@ -89,5 +127,22 @@ export function checkAuthErrorMessage(error: any) {
     default:
       showErrorToast("알 수 없는 오류입니다!")
       break;
+  }
+}
+
+export async function deleteCurrentUserAPI(type: string) {
+  try {
+    if (auth.currentUser) {
+      switch (type) {
+        case "self":
+          showSuccessToast("회원 정보가 삭제되었습니다!");
+          break;
+
+      }
+      await deleteUser(auth.currentUser);
+    }
+  } catch (firebaseError) {
+    checkAuthErrorMessageAPI(firebaseError);
+    return null;
   }
 }

@@ -18,7 +18,7 @@ export function showInfoToast(msg: string) {
   $nuxt.$toast.info(msg);
 }
 
-export function clearAllToast(msg: string) {
+export function clearAllToast() {
   //@ts-ignore
   $nuxt.$toast.clear();
 }

@@ -52,13 +52,14 @@ async function resetPassword() {
 
   > .modal-inner {
     background-color: var(--color-background-soft);
-    padding: 3.6rem;
+    padding: 2.4rem;
     border-radius: 0.8rem;
 
     > h1 {
       font-weight: 700;
       word-break: keep-all;
       text-align: center;
+      font-size: 1.6rem;
     }
 
     > input {
@@ -68,7 +69,7 @@ async function resetPassword() {
       border: .2rem solid var(--color-border-hover);
       color: var(--color-text);
       padding: 0 1.6rem;
-      height: 4.2rem;
+      height: 3.6rem;
       font-weight: 500;
       border-radius: 0.8rem;
       font-size: 1.4rem;
@@ -81,10 +82,10 @@ async function resetPassword() {
     }
 
     > button {
-      margin-top: 2.4rem;
+      margin-top: 1.6rem;
        width: 100%;
        background-color: var(--color-accent);
-       height: 4.2rem;
+       height: 3.6rem;
        border-radius: 0.8rem;
        font-weight: 700;
        font-size: 1.4rem;
@@ -92,36 +93,24 @@ async function resetPassword() {
   }
 }
 
+
+
 @media screen and (max-width: 767px) {
   .modal-inner {
-    width: 100%;
-    min-width: 32rem;
-    max-width: 42rem !important;
-
-    > h1 {
-      font-size: 1.8rem;
-    }
+    max-width: 40rem;
+    margin: 0 2.4rem;
   }
 }
 
 @media screen and (min-width: 768px) and (max-width: 1023px) {
   .modal-inner {
-    width: 100%;
-    max-width: 56rem !important;
-
-    > h1 {
-      font-size: 2.2rem;
-    }
+    max-width: 36rem !important;
   }
 }
 
 @media screen and (min-width: 1024px) {
   .modal-inner {
-    max-width: 56rem !important;
-
-    > h1 {
-      font-size: 2.4rem;
-    }
+    max-width: 32rem !important;
   }
 }
 </style>

@@ -17,6 +17,14 @@
   flex-direction: column;
 }
 
+svg.error > path {
+  fill: red !important;
+}
+
+svg.success > path {
+  fill: green !important;
+}
+
 .page-enter-active,
 .page-leave-active {
   transition: opacity 0.5s ease-in-out;

@@ -59,7 +59,7 @@ const emit = defineEmits(['close']);
 .modal-outer {
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0,0,0,0.5);
   position: fixed;
   z-index: 999;
   top: 0;
@@ -70,14 +70,14 @@ const emit = defineEmits(['close']);
 
   > .modal-inner {
     background-color: var(--color-background-soft);
-    padding: 3.6rem;
+    padding: 2.4rem;
     border-radius: 0.8rem;
 
     > h1 {
       font-weight: 700;
       word-break: keep-all;
       text-align: center;
-      font-size: 2.4rem;
+      font-size: 1.6rem;
     }
 
     > p {
@@ -86,7 +86,7 @@ const emit = defineEmits(['close']);
       height: 70%;
       max-height: 36rem;
       font-weight: 500;
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       overflow-y: scroll;
       padding-right: 0.8rem;
 
@@ -121,22 +121,20 @@ const emit = defineEmits(['close']);
 
 @media screen and (max-width: 767px) {
   .modal-inner {
-    width: 100%;
-    min-width: 32rem;
-    max-width: 36rem !important;
+    max-width: 40rem;
+    margin: 0 2.4rem;
   }
 }
 
 @media screen and (min-width: 768px) and (max-width: 1023px) {
   .modal-inner {
-    width: 100%;
-    max-width: 56rem !important;
+    max-width: 36rem !important;
   }
 }
 
 @media screen and (min-width: 1024px) {
   .modal-inner {
-    max-width: 56rem !important;
+    max-width: 32rem !important;
   }
 }
 </style>

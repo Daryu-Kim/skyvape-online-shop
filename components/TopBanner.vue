@@ -1,9 +1,27 @@
 <script setup lang="ts">
+import {onBeforeMount, onMounted, ref} from "vue";
+import {readDocumentsDataOnce} from "~/scripts/FirebaseFirestore";
+import {DocumentData} from "firebase/firestore";
+
+const currentText = ref(''),
+  currentRoute = ref('');
+
+
+onBeforeMount(async () => {
+  let index = 0;
+  const data: DocumentData[] = await readDocumentsDataOnce("SETTING/GENERAL_SETTING/TOP_BANNER") as DocumentData[];
+  currentText.value = data[index].bannerText;
+  setInterval(() => {
+    index = (index + 1) % data.length;
+    currentText.value = data[index].bannerText;
+    currentRoute.value = data[index].bannerRoute;
+  }, 10000)
+})
 </script>
 
 <template>
   <div class="top-banner">
-    <nuxt-link to="/login">💌 지금 회원가입 시 5,000원 쿠폰 바로 증정! 💌</nuxt-link>
+    <nuxt-link :to="currentRoute">{{currentText}}</nuxt-link>
   </div>
 </template>
 

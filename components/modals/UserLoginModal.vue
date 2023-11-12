@@ -1,70 +1,81 @@
 <script setup lang="ts">
-import IconLock from "~/components/icons/IconLock.vue";
+import {defineProps, ref, defineEmits} from "vue";
+import {loginEmailAndPasswordAPI, loginSocialAccountAPI, resetPasswordAPI} from "~/scripts/FirebaseAuth";
+import IconGoogle from "~/components/icons/IconGoogle.vue";
 import IconApple from "~/components/icons/IconApple.vue";
 import IconFacebook from "~/components/icons/IconFacebook.vue";
-import IconGoogle from "~/components/icons/IconGoogle.vue";
 import IconKakao from "~/components/icons/IconKakao.vue";
-import TopBanner from "~/components/TopBanner.vue";
-import {ref} from "vue";
-import BaseFooter from "~/components/BaseFooter.vue";
-import {
-  loginEmailAndPasswordAPI,
-  loginFacebookAccountAPI,
-  loginSocialAccountAPI,
-  resetPasswordAPI
-} from "~/scripts/FirebaseAuth";
+import UserJoinAcceptModal from "~/components/modals/UserJoinAcceptModal.vue";
+import UserResetPasswordModal from "~/components/modals/UserResetPasswordModal.vue";
+import {showInfoToast, showSuccessToast} from "~/scripts/Toast";
+import UserJoinFormModal from "~/components/modals/UserJoinFormModal.vue";
 
-let userInputID = ref(''), userInputPW = ref('');
-const isShowModal = ref(false);
+const props = defineProps({
+  isShowModal: Boolean
+});
+
+const isShowFindModal = ref(false),
+  isShowJoinTermsModal = ref(false),
+  isShowJoinFormModal = ref(false),
+  isShowJoinCompleteModal = ref(false);
+
+const emit = defineEmits(['close']);
+const userInputEmail = ref(''),
+  userInputPassword = ref('');
 
 async function joinSocialAccount(platform: string) {
   const resultLoginData = await loginSocialAccountAPI(platform);
   if (resultLoginData) {
-    $nuxt.$router.back();
+    emit('close');
+    $nuxt.$router.go(0);
   }
 }
 
 async function loginEmailAccount() {
-  const resultLoginData = await loginEmailAndPasswordAPI(userInputID.value, userInputPW.value);
+  const resultLoginData = await loginEmailAndPasswordAPI(userInputEmail.value, userInputPassword.value);
   if (resultLoginData) {
-    $nuxt.$router.back();
+    emit('close');
+    $nuxt.$router.go(0);
   }
 }
 
+function checkClosedJoinAcceptModal(modalStatus: boolean) {
+  isShowJoinTermsModal.value = false;
+  if (modalStatus) {
+    isShowJoinFormModal.value = true;
+  } else {
+    showInfoToast("회원 가입을 취소하셨습니다!");
+  }
+}
+
+function checkClosedJoinFormModal(modalStatus: boolean) {
+  isShowJoinFormModal.value = false;
+  if (modalStatus) {
+    isShowJoinCompleteModal.value = true;
+  } else {
+    showInfoToast("회원 가입을 취소하셨습니다!");
+  }
+}
 </script>
 
 <template>
-  <div class="wrapper">
-    <TopBanner />
-    <BasePCHeader />
-    <main>
-      <article class="skyvape-join-msg-article">
-        <section class="title-section">
-          <h1>환영합니다, 고객님 :)</h1>
-          <h1>SKYVAPE 입니다!</h1>
-        </section>
-        <section class="desc-section">
-          <h2>회원가입을 하시면 다양하고 특별한 혜택이 준비되어 있습니다.</h2>
-        </section>
-      </article>
-      <article class="skyvape-join-form-article">
+  <transition name="fade">
+    <div v-if="isShowModal" class="modal-outer" @click.self="$emit('close')">
+      <div class="modal-inner">
         <section class="form-section">
-          <input type="email" maxlength="50" placeholder="이메일" v-model="userInputID">
-          <input type="password" maxlength="20" placeholder="패스워드" v-model="userInputPW">
-          <div class="lock-div">
-            <IconLock class="lock-ico" />
-            <p>보안 접속중</p>
-          </div>
-          <button @click="loginEmailAccount">로그인</button>
-          <div class="find-div">
-            <button @click="isShowModal = true;">비밀번호를 잊으셨나요?</button>
-          </div>
-        </section>
-        <section class="join-section">
-          <button @click="$nuxt.$router.push('/join')">
+          <h1>내 계정에 로그인</h1>
+          <h2>이메일과 비밀번호를 입력하십시오 :</h2>
+          <input type="email" maxlength="50" v-model="userInputEmail" placeholder="이메일" @keyup.enter="loginEmailAccount">
+          <input type="password" maxlength="20" v-model="userInputPassword" placeholder="비밀번호" @keyup.enter="loginEmailAccount">
+          <button class="login" @click="loginEmailAccount">로그인</button>
+          <button class="find" @click="isShowFindModal = true;">비밀번호를 잊으셨나요?</button>
+          <UserResetPasswordModal :isShowModal="isShowFindModal" @close="isShowFindModal = false" />
+          <button class="join" @click="isShowJoinTermsModal = true">
             <p>아직 회원이 아니세요?</p>
             <p>회원가입 ></p>
           </button>
+          <UserJoinAcceptModal :isShowModal="isShowJoinTermsModal" @close="checkClosedJoinAcceptModal" />
+          <UserJoinFormModal :isShowModal="isShowJoinFormModal" @close="checkClosedJoinFormModal" />
         </section>
         <section class="social-section">
           <div class="title-div">
@@ -91,51 +102,63 @@ async function loginEmailAccount() {
             </button>
           </div>
         </section>
-      </article>
-    </main>
-    <BaseFooter />
-    <ResetPasswordModal :isShowModal="isShowModal" @close="isShowModal = false" />
-  </div>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <style scoped lang="scss">
-main {
-  > .skyvape-join-msg-article {
-    padding-bottom: 3.6rem;
-    border-bottom: .1rem solid var(--color-border-hover);
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .3s ease;
+}
 
-    > .title-section {
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+.modal-outer {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  > .modal-inner {
+    background-color: var(--color-background-soft);
+    padding: 2.4rem;
+    border-radius: 0.8rem;
+    width: 100%;
+
+    > section {
+
       > h1 {
         font-weight: 700;
-        font-size: 2.4rem;
-        line-height: 3.2rem;
+        word-break: keep-all;
+        text-align: center;
+        font-size: 1.6rem;
       }
-    }
-    > .desc-section {
-      margin-top: 0.8rem;
+
       > h2 {
+        margin-top: 0.8rem;
         font-weight: 500;
+        word-break: keep-all;
+        text-align: center;
         font-size: 1.4rem;
-        color: var(--color-heading);
       }
-    }
-  }
-
-  > .skyvape-join-form-article {
-    padding: 3.6rem 0;
-
-    > .form-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
 
       > input {
+        margin-top: 2.4rem;
         width: 100%;
         background: none;
         border: .2rem solid var(--color-border-hover);
         color: var(--color-text);
         padding: 0 1.6rem;
-        height: 4.2rem;
+        height: 3.6rem;
         font-weight: 500;
         border-radius: 0.8rem;
         font-size: 1.4rem;
@@ -145,25 +168,14 @@ main {
           border-width: .2rem;
           outline: none;
         }
-      }
 
-      > .lock-div {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-
-        > svg {
-          width: 2.4rem;
-          height: 2.4rem;
-        }
-
-        > p {
-          font-size: 1.2rem;
-          font-weight: 700;
+        &:nth-child(4) {
+          margin-top: 0.8rem;
         }
       }
 
-      > button {
+      > button.login {
+        margin-top: 2.4rem;
         width: 100%;
         background-color: var(--color-accent);
         height: 4.2rem;
@@ -172,32 +184,23 @@ main {
         font-size: 1.4rem;
       }
 
-      > .find-div {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1.6rem;
-
-
-        > button {
-          width: auto;
-          font-weight: 700;
-          color: var(--color-border-hover);
-          font-size: 1.2rem;
-        }
+      > button.find {
+        width: 100%;
+        font-weight: 700;
+        color: var(--color-border-hover);
+        font-size: 1.2rem;
+        text-align: center;
+        margin-top: 0.8rem;
       }
 
-    }
-
-    > .join-section {
-      margin: 1.6rem 0;
-      > button {
+      > button.join {
+        margin-top: 0.8rem;
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 0 1.6rem;
-        height: 4.2rem;
+        height: 3.6rem;
         border: .2rem solid var(--color-border);
         border-radius: 0.8rem;
         font-size: 1.2rem;
@@ -207,10 +210,11 @@ main {
           font-weight: 700;
         }
       }
+
     }
 
     > .social-section {
-      margin-top: 3.6rem;
+      margin-top: 2.4rem;
 
       > .title-div {
         display: flex;
@@ -231,17 +235,17 @@ main {
       }
 
       > .button-div {
-        margin-top: 2.4rem;
+        margin-top: 1.6rem;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 1.2rem;
+        gap: 0.8rem;
         > button {
           width: 100%;
-          height: 4.2rem;
+          height: 3.6rem;
           border-radius: 0.8rem;
           font-weight: 500;
-          font-size: 1.4rem;
+          font-size: 1.2rem;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -269,8 +273,8 @@ main {
           }
 
           > svg {
-            width: 2.4rem;
-            height: 2.4rem;
+            width: 1.6rem;
+            height: 1.6rem;
           }
         }
       }
@@ -279,25 +283,21 @@ main {
 }
 
 @media screen and (max-width: 767px) {
-  main {
-    margin: 0 auto;
-    width: 100%;
-    min-width: 36rem;
-    max-width: 52rem !important;
+  .modal-inner {
+    max-width: 40rem;
+    margin: 0 2.4rem;
   }
 }
 
 @media screen and (min-width: 768px) and (max-width: 1023px) {
-  main {
-    margin: 0 auto;
-    width: 100%;
-    max-width: 56rem !important;
+  .modal-inner {
+    max-width: 36rem !important;
   }
 }
 
 @media screen and (min-width: 1024px) {
-  main {
-    max-width: 52rem !important;
+  .modal-inner {
+    max-width: 32rem !important;
   }
 }
 </style>

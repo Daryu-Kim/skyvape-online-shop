@@ -1,16 +1,14 @@
 <script setup lang="ts">
-async function adultRequest() {
-}
-
-function paymentRequest() {
-}
 </script>
 
 <template>
-  <main>
-    <button @click="adultRequest">본인인증</button>
-    <button @click="paymentRequest">결제테스트</button>
-  </main>
+  <div class="wrapper">
+    <TopBanner />
+    <BasePCHeader />
+    <main>
+    </main>
+    <BaseFooter />
+  </div>
 </template>
 
 <style scoped lang="scss">

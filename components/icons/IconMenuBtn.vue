@@ -14,7 +14,7 @@ svg {
   height: 100%;
 
   > path {
-    fill: white;
+    fill: black;
   }
 }
 </style>

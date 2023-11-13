@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import IconMenuBtn from "~/components/icons/IconMenuBtn.vue";
 import IconSearchBtn from "~/components/icons/IconSearchBtn.vue";
 import IconCartBtn from "~/components/icons/IconCartBtn.vue";
 import UserLoginModal from "~/components/modals/UserLoginModal.vue";
 import {onBeforeMount, onMounted, ref} from "vue";
 import {readDocumentDataOnce} from "~/scripts/FirebaseFirestore";
+import {auth} from "~/scripts/FirebaseAuth";
 
 const isShowLoginModal = ref(false);
 const logoName = ref('');
@@ -13,24 +13,25 @@ onBeforeMount(async () => {
   const generalSettingData = await readDocumentDataOnce("SETTING", "GENERAL_SETTING");
   logoName.value = generalSettingData.siteName;
 })
+
+function onClickCartButton() {
+  if (auth.currentUser?.uid) {
+    $nuxt.$router.push("/cart");
+  } else {
+    isShowLoginModal.value = !isShowLoginModal.value;
+  }
+}
 </script>
 
 <template>
   <header>
     <article class="inner">
       <nuxt-link class="skyvape-logo" to="/">{{logoName}}</nuxt-link>
-      <nav class="skyvape-menu">
-        <ul>
-          <li>
-            <nuxt-link to="/product-liquid">액상</nuxt-link>
-          </li>
-        </ul>
-      </nav>
       <div class="skyvape-func-menu">
         <button>
           <IconSearchBtn />
         </button>
-        <button @click="isShowLoginModal = !isShowLoginModal">
+        <button @click="onClickCartButton">
           <IconCartBtn />
         </button>
       </div>

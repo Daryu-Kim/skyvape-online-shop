@@ -38,6 +38,8 @@ svg.success > path {
 #__nuxt main {
   padding: 4.8rem 2.4rem;
   flex: 1;
+  margin: 0 auto !important;
+  width: 100%;
 }
 
 input[type=checkbox] {
@@ -98,11 +100,5 @@ button {
   body {
     display: flex;
     align-items: center;
-  }
-
-  #__nuxt main {
-    margin: auto;
-    width: 100%;
-    max-width: 1024px;
   }
 }

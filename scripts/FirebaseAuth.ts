@@ -38,7 +38,7 @@ export async function joinEmailAndPasswordAPI(
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     if (userCredential) {
-      const isCreatedUserData = createEmailUserDataAPI(
+      const isCreatedUserData = await createEmailUserDataAPI(
         email, postalCode, address1, address2, invitor, name, phoneNumber
       );
       if (isCreatedUserData) {

@@ -205,7 +205,7 @@ async function confirmFormInput() {
               <div class="form-input-div">
                 <div>
                   <input type="number" v-model="userInputPostalCode" maxlength="5" placeholder="우편번호" disabled>
-                  <button @click="onClickSearchAddress">주소 검색</button>
+                  <button @click="onClickSearchAddress">검색</button>
                 </div>
                 <input type="text" v-model="userInputAddress1" placeholder="기본 주소" disabled>
                 <input type="text" v-model="userInputAddress2" placeholder="나머지 주소">

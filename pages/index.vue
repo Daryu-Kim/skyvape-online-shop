@@ -5,18 +5,42 @@ import {DocumentData} from 'firebase/firestore';
 import {Swiper, SwiperSlide} from "vue-awesome-swiper";
 import "swiper/css/swiper.css";
 
-const listOfCategoryItems = ref([]);
+const listOfCategoryItems = ref([]),
+      listOfKeywordItems = ref([]),
+      listOfBestItems = ref([]);
 onMounted(async () => {
-  const data = await readDocumentsDataOnce('SETTING/MENU_ITEM/MAIN') as DocumentData[];
-  const dataArr: never[] = [];
-  data.forEach((item) => {
-    dataArr.push(item as never);
+  const mainMenuData = await readDocumentsDataOnce('SETTING/MAIN_MENU/MENU_TEST_ITEM') as DocumentData[],
+        keywordsData = await readDocumentsDataOnce('SETTING/KEYWORDS/KEYWORD_TEST_LIST') as DocumentData[],
+        bestItemsData = await readDocumentsDataOnce('SETTING/PRODUCTS/PRODUCT_TEST_LIST') as DocumentData[];
+  const mainMenuDataArr: never[] = [],
+        keywordsDataArr: never[] = [],
+        bestItemsDataArr: never[] = [];
+  mainMenuData.forEach((item) => {
+    mainMenuDataArr.push(item as never);
   });
-  listOfCategoryItems.value = dataArr.sort((a, b) => {
-    if (a.mainMenuItemNumber > b.mainMenuItemNumber) return 1;
-    if (a.mainMenuItemNumber < b.mainMenuItemNumber) return -1;
+  keywordsData.forEach((item) => {
+    keywordsDataArr.push(item as never);
+  });
+  bestItemsData.forEach((item) => {
+    bestItemsDataArr.push(item as never);
+  });
+  listOfCategoryItems.value = mainMenuDataArr.sort((a, b) => {
+    if (a.menuNumber > b.menuNumber) return 1;
+    if (a.menuNumber < b.menuNumber) return -1;
     return 0;
   });
+  listOfKeywordItems.value = keywordsDataArr.sort((a, b) => {
+    if (a.keywordCount > b.keywordCount) return -1;
+    if (a.keywordCount < b.keywordCount) return 1;
+    return 0;
+  });
+  listOfBestItems.value = bestItemsDataArr.sort((a, b) => {
+    if (a.productViewCount > b.productViewCount) return -1;
+    if (a.productViewCount < b.productViewCount) return 1;
+    return 0;
+  })
+  listOfKeywordItems.value = listOfKeywordItems.value.slice(0, 5);
+  listOfBestItems.value = listOfBestItems.value.slice(0, 5);
   console.log(listOfCategoryItems.value);
 });
 
@@ -47,20 +71,18 @@ onMounted(async () => {
     spaceBetween: '16'
   });
 
-  function testPayment() {
-    IMP.init("imp14397622");
-    IMP.request_pay({
-      pg: "tosspayments",
-      pay_method: "card",
-      merchant_uid: "test_lovwy5sq",
-      name: "테스트 결제",
-      amount: 1,
-      popup: true,
-      buyer_tel: "010-0000-0000",
-    }, function (r: any) {
-      console.log(r);
-    });
-  }
+  const hotDealSwiperOptions = ref({
+    pagination: {
+      el: '.swiper-pagination',
+      type: 'bullet'
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+    slidesPerView: 'auto',
+    spaceBetween: '16'
+  });
 </script>
 
 <template>
@@ -78,8 +100,8 @@ onMounted(async () => {
           <div class="content-div">
             <Swiper class="swiper-container" :options="swiperOptions">
               <SwiperSlide class="swiper-slide" v-for="(menuItem, menuIndex) in listOfCategoryItems" :key="menuIndex">
-                <nuxt-link :to="menuItem.mainMenuItemRoute" class="menu-item" :style="{backgroundImage: `url(${menuItem.mainMenuItemImage})`}"></nuxt-link>
-                <p>{{menuItem.mainMenuItemName}}</p>
+                <nuxt-link :to="menuItem.menuRoute" class="menu-item" :style="{backgroundImage: `url(${menuItem.menuImage})`}"></nuxt-link>
+                <p>{{menuItem.menuName}}</p>
               </SwiperSlide>
               <div class="swiper-button-next"></div>
               <div class="swiper-button-prev"></div>
@@ -87,7 +109,6 @@ onMounted(async () => {
           </div>
         </section>
       </article>
-<!--      <button @click="testPayment">결제 테스트</button>-->
       <article class="skyvape-index-popular-tag-article">
         <section>
           <h1 class="title-text">
@@ -95,38 +116,63 @@ onMounted(async () => {
           </h1>
           <p>최근 많이 검색된 키워드를 살펴보세요!</p>
           <div class="content-div">
-            <div v-for="item in ['다류', '도화', '김포루', 'Karo_Kim', '카누랜드', 'Kanablere']" class="content-item-div">
+            <div v-for="(item, index) in listOfKeywordItems" class="content-item-div" :key="index" @click="$nuxt.$router.push(`/search/${item.keywordName}`)">
               <p>#</p>
-              <p>{{item}}</p>
+              <p>{{item.keywordName}} ({{item.keywordCount.toLocaleString()}})</p>
             </div>
           </div>
         </section>
       </article>
-      <article class="skyvape-index-popular-tag-article">
+      <article class="skyvape-index-best5-article">
         <section>
           <h1 class="title-text">
             👍 BEST 5 상품
           </h1>
           <p>제일 잘 나가는 5가지의 상품을 보여드립니다!</p>
           <div class="content-div">
-            <div v-for="item in ['다류', '도화', '김포루', 'Karo_Kim', '카누랜드', 'Kanablere']" class="content-item-div">
-              <p>#</p>
-              <p>{{item}}</p>
-            </div>
+            <details v-for="(bestItem, bestItemIndex) in listOfBestItems" class="content-item-div" :open="bestItemIndex === 0">
+              <summary class="title-div">
+                <p class="title-index-text">{{bestItemIndex + 1}}</p>
+                <p class="title0-text">{{bestItem.productName}}</p>
+                <div class="arrow">▶</div>
+              </summary>
+              <div class="content-div">
+                <div class="border-div"></div>
+                <div class="item-div" @click="$nuxt.$router.push(`/product/${bestItem.productId}`)">
+                  <div class="item-thumbnail" :style="{backgroundImage: `url(${bestItem.productThumbnail})`}"></div>
+                  <div class="item-info-div">
+                    <p class="product-name-text">{{bestItem.productName}}</p>
+                    <p class="product-tag-text">{{bestItem.productTag.map(item => "#" + item).join(" ")}}</p>
+                    <p class="product-description-text">{{bestItem.productDescription}}</p>
+                    <p class="product-price-text">{{bestItem.productSellPrice.toLocaleString()}}원</p>
+                  </div>
+                </div>
+              </div>
+            </details>
           </div>
         </section>
       </article>
-      <article class="skyvape-index-popular-tag-article">
+      <article class="skyvape-index-hotdeal-article">
         <section>
           <h1 class="title-text">
             🔥 빨리 확인해야 하는 핫딜
           </h1>
           <p>인기 상품을 최대 -50%의 가격으로 구매해보세요!</p>
           <div class="content-div">
-            <div v-for="item in ['다류', '도화', '김포루', 'Karo_Kim', '카누랜드', 'Kanablere']" class="content-item-div">
-              <p>#</p>
-              <p>{{item}}</p>
-            </div>
+            <Swiper class="swiper-container" :options="hotDealSwiperOptions">
+              <SwiperSlide class="swiper-slide" v-for="(item, index) in listOfCategoryItems" :key="index">
+                <nuxt-link :to="item.menuRoute" class="menu-item">
+                  <div class="product-thumbnail" :style="{backgroundImage: `url(${item.menuImage})`}">
+
+                  </div>
+                  <div class="product-info">
+                    <p class="product-name">{{item.productName}}</p>
+                  </div>
+                </nuxt-link>
+              </SwiperSlide>
+              <div class="swiper-button-next"></div>
+              <div class="swiper-button-prev"></div>
+            </Swiper>
           </div>
         </section>
       </article>
@@ -294,9 +340,193 @@ main {
             border-radius: 100rem;
             border: 0.2rem solid var(--color-accent);
             padding: 0.2rem 1.6rem;
+            cursor: pointer;
+
+            &:hover {
+              background-color: var(--color-accent);
+              > p {
+                color: black;
+              }
+            }
+
             > p {
               font-size: 1.4rem;
               font-weight: 700;
+            }
+          }
+        }
+      }
+    }
+
+    &.skyvape-index-best5-article {
+      > section {
+        > div {
+          display: flex;
+          flex-direction: column;
+          gap: 0.8rem;
+          > details {
+            border-radius: 0.8rem;
+            width: 100%;
+            height: auto;
+            padding: 1.2rem 2rem;
+            border: 0.2rem solid var(--color-border-hover);
+            > .title-div {
+              display: flex;
+              align-items: center;
+              gap: 0.8rem;
+              font-size: 1.4rem;
+              cursor: pointer;
+              > .title-index-text {
+                font-weight: 700;
+                color: var(--color-accent);
+              }
+
+              > .title-text {
+                font-weight: 500;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                -webkit-line-clamp: 1;
+              }
+            }
+
+            > .content-div {
+              > .border-div {
+                border: 0.1rem solid var(--color-border-hover);
+                margin: 1.2rem 0;
+              }
+
+              > .item-div {
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 1.6rem;
+                > .item-thumbnail {
+                  aspect-ratio: 1 / 1;
+                  width: 9.6rem;
+                  border-radius: 0.8rem;
+                  background-position: center;
+                  background-repeat: no-repeat;
+                  background-size: cover;
+                }
+
+                > .item-info-div {
+                  > p {
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                  }
+
+                  > .product-name-text {
+                    font-size: 1.4rem;
+                    -webkit-line-clamp: 1;
+                  }
+
+                  > .product-tag-text {
+                    font-size: 1.2rem;
+                    color: var(--color-border-hover);
+                    -webkit-line-clamp: 1;
+                  }
+
+                  > .product-description-text {
+                    font-size: 1.2rem;
+                    color: var(--color-accent);
+                    word-break: keep-all;
+                    -webkit-line-clamp: 2;
+                  }
+
+                  > .product-price-text {
+                    font-size: 1.6rem;
+                    font-weight: 700;
+                    -webkit-line-clamp: 1;
+                  }
+                }
+              }
+            }
+
+            > summary {
+              position: relative;
+              list-style: none;
+            }
+
+            > summary::-webkit-details-marker {
+              display: none;
+            }
+
+            > summary .arrow {
+              position: absolute;
+              right: 0;
+              transition: transform 0.3s ease-in-out;
+              font-size: 1rem;
+            }
+
+            &[open] > summary .arrow {
+              transform: rotate(90deg);
+            }
+          }
+
+        }
+      }
+    }
+
+    &.skyvape-index-hotdeal-article {
+      > section {
+        > div > .swiper-container {
+          width: 100%;
+          .swiper-button-next, .swiper-button-prev {
+            width: 3.6rem;
+            height: 3.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--color-background-mute);
+            border-radius: 50%;
+
+            &::after {
+              font-size: 1.2rem;
+              font-weight: 900;
+              color: var(--color-accent);
+            }
+          }
+
+          .swiper-slide {
+            width: auto;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--color-background-mute);
+            border-radius: 0.8rem;
+            padding: 0.8rem;
+
+            .menu-item {
+              display: block;
+              background-repeat: no-repeat;
+              background-position: center;
+              background-size: cover;
+              border-radius: 50%;
+
+              > .product-thumbnail {
+                aspect-ratio: 1 / 1;
+                width: 16rem;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover;
+                border-radius: 0.8rem;
+              }
+
+              > .product-info {
+
+              }
+            }
+
+            > p {
+              color: var(--color-text);
+              font-size: 1.2rem;
+              font-weight: 700;
+              text-align: center;
+              margin-top: 0.8rem;
             }
           }
         }

@@ -1,11 +1,12 @@
-import {showErrorToast} from "~/scripts/Toast";
+import {showErrorToast, showSuccessToast} from "~/scripts/Toast";
 import {auth, deleteCurrentUserAPI} from "~/scripts/FirebaseAuth";
-import {getFirestore, doc, setDoc, getDoc, getDocs, collection, DocumentData} from "firebase/firestore";
+import {getFirestore, doc, setDoc, getDoc, getDocs, collection, DocumentData, updateDoc, arrayUnion} from "firebase/firestore";
 import {app} from "~/scripts/Firebase";
 
 export const firestore = getFirestore(app);
 
 export async function readDocumentDataOnce(collection: string, document: string) {
+  console.log(collection, document)
   try {
     const documentData = await getDoc(doc(firestore, collection, document));
 
@@ -16,6 +17,7 @@ export async function readDocumentDataOnce(collection: string, document: string)
       return false;
     }
   } catch (firebaseError) {
+    console.log(firebaseError)
     checkFirestoreErrorMessage(firebaseError);
     return false;
   }
@@ -33,6 +35,26 @@ export async function readDocumentsDataOnce(col: string) {
       return datas;
     } else {
       showErrorToast("불러올 데이터가 없습니다!");
+      return false;
+    }
+  } catch (firebaseError) {
+    checkFirestoreErrorMessage(firebaseError);
+    return false;
+  }
+}
+
+export async function addToCartORPurchaseAPI(data: never[], isRedirectPurchase: boolean) {
+  try {
+    data.forEach(async(item: [{}]) => {
+      await updateDoc(doc(firestore, "USER", auth.currentUser?.uid as string), {
+        userCart: arrayUnion(item)
+      });
+    });
+
+    if (isRedirectPurchase) {
+      return true;
+    } else {
+      showSuccessToast("상품을 장바구니에 담았습니다!");
       return false;
     }
   } catch (firebaseError) {
@@ -61,7 +83,12 @@ export async function createEmailUserDataAPI(
       userAddress1: address1,
       userAddress2: address2,
       userInvitor: invitor,
-      isAcceptedAlert: JSON.parse(sessionStorage.getItem("ACCEPT_ALERT") as string)
+      isAcceptedAlert: JSON.parse(sessionStorage.getItem("ACCEPT_ALERT") as string),
+      userCart: [],
+      userQNA: [],
+      userReview: [],
+      userCoupon: [],
+      userPoint: 0
     });
     sessionStorage.removeItem("ACCEPT_ALERT");
     return true;

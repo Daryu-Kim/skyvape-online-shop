@@ -87,15 +87,15 @@ onMounted(async () => {
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        width: 3.2rem;
-        height: 3.2rem;
+        width: 4.8rem;
+        height: 4.8rem;
         border-radius: 50%;
       }
 
       > p {
         color: white;
         font-weight: 700;
-        font-size: 1.2rem;
+        font-size: 1.4rem;
       }
     }
   }

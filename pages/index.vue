@@ -133,7 +133,7 @@ onMounted(async () => {
             <details v-for="(bestItem, bestItemIndex) in listOfBestItems" class="content-item-div" :open="bestItemIndex === 0">
               <summary class="title-div">
                 <p class="title-index-text">{{bestItemIndex + 1}}</p>
-                <p class="title0-text">{{bestItem.productName}}</p>
+                <p class="title-text">{{bestItem.productName}}</p>
                 <div class="arrow">▶</div>
               </summary>
               <div class="content-div">
@@ -419,6 +419,7 @@ main {
 
                   > .product-name-text {
                     font-size: 1.4rem;
+                    font-weight: 500;
                     -webkit-line-clamp: 1;
                   }
 

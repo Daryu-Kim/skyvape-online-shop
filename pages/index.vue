@@ -96,7 +96,7 @@ onMounted(async () => {
           <h1 class="title-text">
             👀 메뉴 한 눈에 보기
           </h1>
-          <p>SKYVAPE만의 메뉴를 드래그하여 바로 둘러보세요!</p>
+          <p>TUMBLUCK만의 메뉴를 드래그하여 바로 둘러보세요!</p>
           <div class="content-div">
             <Swiper class="swiper-container" :options="swiperOptions">
               <SwiperSlide class="swiper-slide" v-for="(menuItem, menuIndex) in listOfCategoryItems" :key="menuIndex">

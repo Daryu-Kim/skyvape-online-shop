@@ -1,12 +1,20 @@
 <script setup lang="ts">
+import {onMounted, ref} from "vue";
+import {readDocumentDataOnce} from "~/scripts/FirebaseFirestore";
+
+const dataCompanyInfo = ref();
+
+onMounted(async() => {
+  dataCompanyInfo.value = await readDocumentDataOnce("SETTING", "GENERAL_SETTING");
+})
 </script>
 
 <template>
   <footer>
     <article class="skyvape-footer-contact">
       <section class="call">
-        <a href="tel:010-5367-2568">
-          010.5367.2568
+        <a v-if="dataCompanyInfo" :href="'tel:'+dataCompanyInfo.companyInfo.companyPhoneNumber">
+          {{dataCompanyInfo.companyInfo.companyPhoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1.$2.$3')}}
         </a>
         <p>
           AM 10:00 - PM 07:00 (주말, 공휴일 휴무)
@@ -19,14 +27,14 @@
     <article class="skyvape-footer-company">
       <section>
         <details>
-          <summary>스카이베이프 사업자 정보</summary>
-          <ul>
-            <li>대표자명 : 이규호</li>
-            <li>사업자등록번호 : 000-00-00000</li>
-            <li>통신판매업신고 : 2023-대전중구-0000</li>
-            <li>주소 : 대전광역시</li>
-            <li>전화번호 : 010-5367-2568</li>
-            <li>Copyright SKYVAPE. All rights reserved.</li>
+          <summary v-if="dataCompanyInfo">{{dataCompanyInfo.siteName}} 사업자 정보</summary>
+          <ul v-if="dataCompanyInfo">
+            <li>대표자명 : {{dataCompanyInfo.companyInfo.companyOwnerName}}</li>
+            <li>사업자등록번호 : {{dataCompanyInfo.companyInfo.companyId.replace(/(\d{3})(\d{2})(\d{5})/, '$1-$2-$3')}}</li>
+            <li>통신판매업신고 : {{dataCompanyInfo.companyInfo.companyOnlineId}}</li>
+            <li>주소 : {{dataCompanyInfo.companyInfo.companyAddress}}</li>
+            <li>전화번호 : {{dataCompanyInfo.companyInfo.companyPhoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')}}</li>
+            <li>Copyright {{dataCompanyInfo.siteName}}. All rights reserved.</li>
           </ul>
         </details>
         <div class="skyvape-footer-privacy">

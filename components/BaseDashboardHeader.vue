@@ -27,8 +27,57 @@ const dataManageSection = [
   {
     parentMenuName: "홈",
     parentMenuIcon: IconCloseBtn,
+    parentMenuRoute: "/dashboard/shop-home",
     childMenuList: [],
-  }
+  },
+  {
+    parentMenuName: "주문",
+    parentMenuIcon: IconCloseBtn,
+    parentMenuRoute: "/dashboard/shop-orders",
+    childMenuList: [],
+  },
+  {
+    parentMenuName: "상품",
+    parentMenuIcon: IconCloseBtn,
+    parentMenuRoute: "/dashboard/shop-products",
+    childMenuList: [],
+  },
+  {
+    parentMenuName: "고객",
+    parentMenuIcon: IconCloseBtn,
+    parentMenuRoute: "/dashboard/shop-customers",
+    childMenuList: [],
+  },
+  {
+    parentMenuName: "게시판",
+    parentMenuIcon: IconCloseBtn,
+    parentMenuRoute: "/dashboard/boards",
+    childMenuList: [],
+  },
+  {
+    parentMenuName: "후기와 질문",
+    parentMenuIcon: IconCloseBtn,
+    parentMenuRoute: "/dashboard/board-productReviewQnaSetting",
+    childMenuList: [],
+  },
+  {
+    parentMenuName: "블로그",
+    parentMenuIcon: IconCloseBtn,
+    parentMenuRoute: "/dashboard/blogs",
+    childMenuList: [],
+  },
+  {
+    parentMenuName: "애드온",
+    parentMenuIcon: IconCloseBtn,
+    parentMenuRoute: "/dashboard/add-ons-all",
+    childMenuList: [],
+  },
+  {
+    parentMenuName: "통계",
+    parentMenuIcon: IconCloseBtn,
+    parentMenuRoute: "/dashboard/statistics",
+    childMenuList: [],
+  },
 ];
 
 onBeforeMount(async () => {
@@ -54,7 +103,7 @@ onBeforeMount(async () => {
   <div class="wrapper">
     <aside>
       <header>
-        <h1>{{dataGeneralSetting ? dataGeneralSetting.siteName : ''}}</h1>
+        <h1 v-if="dataGeneralSetting">{{dataGeneralSetting.siteName}}</h1>
         <button @click="isClickedMenu = !isClickedMenu">
           <IconCloseBtn v-if="isClickedMenu" />
           <IconMenuBtn v-else />
@@ -73,13 +122,14 @@ onBeforeMount(async () => {
           <p>상점 관리하기</p>
           <nav>
             <ul>
-              <li>
+              <li v-for="(item, index) in dataManageSection" :key="index">
                 <button>
-                  <IconCloseBtn />
-                  <p>홈</p>
+                  <div>
+                    <component :is="item.parentMenuIcon" />
+                  </div>
+                  <p>{{item.parentMenuName}}</p>
                 </button>
               </li>
-
             </ul>
           </nav>
         </section>
@@ -159,6 +209,60 @@ onBeforeMount(async () => {
             color: var(--color-text);
             font-weight: 700;
             font-size: 1.4rem;
+          }
+        }
+      }
+
+      > .skyvape-dashboard-manage-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        margin-top: 2.4rem;
+
+        > p {
+          font-weight: 700;
+          font-size: 1.4rem;
+          color: var(--color-border-hover);
+        }
+
+        > nav {
+          margin-top: 0.8rem;
+          > ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            > li {
+              > button {
+                width: 100%;
+                height: auto;
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+                cursor: pointer;
+
+                > div {
+                  width: 2.8rem;
+                  height: 2.8rem;
+                  background-color: var(--color-accent);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 0.8rem;
+
+                  > svg {
+                    width: 2rem;
+                    height: 2rem;
+                  }
+                }
+
+                > p {
+                  color: var(--color-text);
+                  font-weight: 500;
+                  font-size: 1.2rem;
+                }
+              }
+            }
           }
         }
       }

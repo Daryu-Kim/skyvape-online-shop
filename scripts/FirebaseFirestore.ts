@@ -89,7 +89,8 @@ export async function createEmailUserDataAPI(
       userReview: [],
       userCoupon: [],
       userPoint: 0,
-      isAdmin: false
+      isAdmin: false,
+      userBuyedList: []
     });
     sessionStorage.removeItem("ACCEPT_ALERT");
     return true;

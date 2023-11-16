@@ -11,4 +11,11 @@
 </template>
 
 <style scoped lang="scss">
+.wrapper {
+  display: flex;
+  flex-direction: unset;
+  > main {
+    flex: 1;
+  }
+}
 </style>

@@ -7,6 +7,14 @@ import IconHome from "~/components/icons/IconHome.vue";
 import IconSetting from "~/components/icons/IconSetting.vue";
 import IconMenuBtn from "~/components/icons/IconMenuBtn.vue";
 import IconCloseBtn from "~/components/icons/IconCloseBtn.vue";
+import IconHomeWidgets from "~/components/icons/IconHomeWidgets.vue";
+import IconOrder from "~/components/icons/IconOrder.vue";
+import IconProduct from "~/components/icons/IconProduct.vue";
+import IconUserGroup from "~/components/icons/IconUserGroup.vue";
+import IconDashboard from "~/components/icons/IconDashboard.vue";
+import IconReviewQna from "~/components/icons/IconReviewQna.vue";
+import IconBlog from "~/components/icons/IconBlog.vue";
+import IconAnalytics from "~/components/icons/IconAnalytics.vue";
 
 const isClickedMenu = ref(false);
 const dataGeneralSetting = ref();
@@ -26,56 +34,50 @@ const dataShopSection = [
 const dataManageSection = [
   {
     parentMenuName: "홈",
-    parentMenuIcon: IconCloseBtn,
+    parentMenuIcon: IconHomeWidgets,
     parentMenuRoute: "/dashboard/shop-home",
     childMenuList: [],
   },
   {
     parentMenuName: "주문",
-    parentMenuIcon: IconCloseBtn,
+    parentMenuIcon: IconOrder,
     parentMenuRoute: "/dashboard/shop-orders",
     childMenuList: [],
   },
   {
     parentMenuName: "상품",
-    parentMenuIcon: IconCloseBtn,
+    parentMenuIcon: IconProduct,
     parentMenuRoute: "/dashboard/shop-products",
     childMenuList: [],
   },
   {
     parentMenuName: "고객",
-    parentMenuIcon: IconCloseBtn,
+    parentMenuIcon: IconUserGroup,
     parentMenuRoute: "/dashboard/shop-customers",
     childMenuList: [],
   },
   {
     parentMenuName: "게시판",
-    parentMenuIcon: IconCloseBtn,
+    parentMenuIcon: IconDashboard,
     parentMenuRoute: "/dashboard/boards",
     childMenuList: [],
   },
   {
     parentMenuName: "후기와 질문",
-    parentMenuIcon: IconCloseBtn,
+    parentMenuIcon: IconReviewQna,
     parentMenuRoute: "/dashboard/board-productReviewQnaSetting",
     childMenuList: [],
   },
   {
     parentMenuName: "블로그",
-    parentMenuIcon: IconCloseBtn,
+    parentMenuIcon: IconBlog,
     parentMenuRoute: "/dashboard/blogs",
     childMenuList: [],
   },
   {
-    parentMenuName: "애드온",
-    parentMenuIcon: IconCloseBtn,
-    parentMenuRoute: "/dashboard/add-ons-all",
-    childMenuList: [],
-  },
-  {
     parentMenuName: "통계",
-    parentMenuIcon: IconCloseBtn,
-    parentMenuRoute: "/dashboard/statistics",
+    parentMenuIcon: IconAnalytics,
+    parentMenuRoute: "/dashboard/analytics",
     childMenuList: [],
   },
 ];
@@ -100,7 +102,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="wrapper">
+  <div class="base-dashboard-header-wrapper">
     <aside>
       <header>
         <h1 v-if="dataGeneralSetting">{{dataGeneralSetting.siteName}}</h1>
@@ -142,7 +144,7 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped lang="scss">
-.wrapper {
+.base-dashboard-header-wrapper {
   width: 24rem;
   border-right: 0.2rem solid var(--color-border-hover);
 
@@ -152,6 +154,7 @@ onBeforeMount(async () => {
     flex-direction: column;
 
     > header {
+      width: 100%;
       padding: 1.6rem;
       display: flex;
       align-items: center;
@@ -221,7 +224,7 @@ onBeforeMount(async () => {
 
         > p {
           font-weight: 700;
-          font-size: 1.4rem;
+          font-size: 1.2rem;
           color: var(--color-border-hover);
         }
 

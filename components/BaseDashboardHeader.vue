@@ -125,12 +125,15 @@ onBeforeMount(async () => {
           <nav>
             <ul>
               <li v-for="(item, index) in dataManageSection" :key="index">
-                <button>
+                <button @click="$nuxt.$router.push(item.parentMenuRoute)">
                   <div>
                     <component :is="item.parentMenuIcon" />
                   </div>
                   <p>{{item.parentMenuName}}</p>
                 </button>
+                <ul v-if="$nuxt.$route.path === item.parentMenuRoute">
+                  <li>asd</li>
+                </ul>
               </li>
             </ul>
           </nav>

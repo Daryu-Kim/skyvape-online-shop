@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, Ref, ref} from "vue";
-import {readDocumentsDataOnce, uploadProductDataAPI} from "~/scripts/FirebaseFirestore";
+import {readDocumentsDataOnce, uploadHotDealProductDataAPI, uploadProductDataAPI} from "~/scripts/FirebaseFirestore";
 import {showInfoToast, showSuccessToast} from "~/scripts/Toast";
 import firebase from "firebase/compat";
 import Timestamp = firebase.firestore.Timestamp;
@@ -8,14 +8,12 @@ import Timestamp = firebase.firestore.Timestamp;
 const categoryData = ref();
 
 onMounted(async() => {
-  categoryData.value = await readDocumentsDataOnce("/SETTING/MAIN_MENU/MENU_TEST_ITEM");
+  categoryData.value = await readDocumentsDataOnce("/SETTING/HOTDEAL_PRODUCT/HOTDEAL_PRODUCT_TEST_LIST");
 })
 
 
 const addedProductDetails = ref([]),
-  addedProductQnaList = ref([]),
   addedProductRequireOptions = ref([]),
-  addedProductReviewList = ref([]),
   addedProductTag = ref([] as string[]),
   addedProductThumbnails = ref([]),
   addedProductAdditionalOptions = ref([]);
@@ -25,21 +23,19 @@ const adminInputProductCategory = ref(''),
   adminInputProductId = ref(''),
   adminInputProductName = ref(''),
   adminInputProductOriginPrice = ref(0),
-  adminInputProductQnaList = ref(''),
   adminInputIsProductRequireOptions = ref(false),
   adminInputProductRequireOptionCount = ref(0),
   adminInputProductRequireOptionColor = ref(''),
   adminInputProductRequireOptionName = ref(''),
   adminInputProductRequireOptionPrice = ref(0),
-  adminInputProductReviewList = ref(''),
   adminInputProductSellPrice = ref(0),
   adminInputProductTag = ref(''),
   adminInputProductThumbnail = ref(''),
-  adminInputProductUploadAt = ref(''),
-  adminInputProductViewCount = ref(0),
+  adminInputProductEndDeal = ref(new Date()),
   adminInputIsProductAdditionalOptions = ref(false),
-  adminInputProductAdditionalOptionCount = ref(''),
+  adminInputProductAdditionalOptionCount = ref(0),
   adminInputProductAdditionalOptionColor = ref(''),
+  adminInputProductAdditionalOptionName = ref(''),
   adminInputProductAdditionalOptionPrice = ref(0);
 
 function addItemForList(list: never, item: never) {
@@ -67,7 +63,10 @@ function setRequireOptionData() {
 
 async function uploadProduct() {
   showInfoToast("상품을 업로드 중입니다!");
-  const result = await uploadProductDataAPI(
+  const tempEndDealDate = new Date(adminInputProductEndDeal.value);
+  tempEndDealDate.setHours(0, 0, 0, 0);
+
+  const result = await uploadHotDealProductDataAPI(
     {
       productId: adminInputProductId.value,
       productName: adminInputProductName.value,
@@ -82,7 +81,8 @@ async function uploadProduct() {
       productTag: addedProductTag.value,
       productThumbnails: addedProductThumbnails.value,
       productUploadAt: Timestamp.now(),
-      productViewCount: 0
+      productViewCount: 0,
+      productEndDeal: Timestamp.fromDate(tempEndDealDate)
     }
   );
   if (result) {
@@ -110,6 +110,9 @@ async function uploadProduct() {
           </div>
           <div>
             상품설명 <input v-model="adminInputProductDescription">
+          </div>
+          <div>
+            상품판매종료일 <input v-model="adminInputProductEndDeal" type="date">
           </div>
           <div>
             상품원가 <input v-model="adminInputProductOriginPrice" type="number">

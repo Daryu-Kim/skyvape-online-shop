@@ -55,20 +55,6 @@ function onClickMainBanner() {
 
 }
 
-.swiper-pagination-fraction {
-  background-color: rgba(0, 0, 0, 0.8);
-  width: auto;
-  height: auto;
-  font-size: 1.2rem;
-  font-weight: 700;
-  padding: 0.2rem 1.6rem;
-  border-radius: 100rem;
-  top: 1.6rem;
-  bottom: unset;
-  left: unset;
-  right: 1.6rem;
-}
-
 @media screen and (max-width: 767px) {
   .swiper-container {
     height: 24rem;

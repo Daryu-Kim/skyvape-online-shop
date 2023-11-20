@@ -102,10 +102,32 @@ export async function createEmailUserDataAPI(
 }
 
 export function checkFirestoreErrorMessage(error: any) {
-  console.error(error.code);
+  console.error(error);
   switch (error.code) {
     default:
-      showErrorToast("알 수 없는 오류입니다!")
+      showErrorToast("알 수 없는 오류입니다!");
       break;
+  }
+}
+
+export async function uploadProductDataAPI(data: {}) {
+  try {
+    // @ts-ignore
+    await setDoc(doc(firestore, "SETTING/PRODUCTS/PRODUCT_TEST_LIST", data.productId), data);
+    return true;
+  } catch (firebaseError) {
+    checkFirestoreErrorMessage(firebaseError);
+    return false;
+  }
+}
+
+export async function uploadHotDealProductDataAPI(data: {}) {
+  try {
+    // @ts-ignore
+    await setDoc(doc(firestore, "SETTING/HOTDEAL_PRODUCTS/HOTDEAL_PRODUCT_TEST_LIST", data.productId), data);
+    return true;
+  } catch (firebaseError) {
+    checkFirestoreErrorMessage(firebaseError);
+    return false;
   }
 }

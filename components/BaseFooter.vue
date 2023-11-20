@@ -29,6 +29,7 @@ onMounted(async() => {
         <details>
           <summary v-if="dataCompanyInfo">{{dataCompanyInfo.siteName}} 사업자 정보</summary>
           <ul v-if="dataCompanyInfo">
+            <li>상호명 : {{dataCompanyInfo.companyInfo.companyName}}</li>
             <li>대표자명 : {{dataCompanyInfo.companyInfo.companyOwnerName}}</li>
             <li>사업자등록번호 : {{dataCompanyInfo.companyInfo.companyId.replace(/(\d{3})(\d{2})(\d{5})/, '$1-$2-$3')}}</li>
             <li>통신판매업신고 : {{dataCompanyInfo.companyInfo.companyOnlineId}}</li>

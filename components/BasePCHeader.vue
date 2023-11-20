@@ -5,8 +5,10 @@ import UserLoginModal from "~/components/modals/UserLoginModal.vue";
 import {onBeforeMount, onMounted, ref} from "vue";
 import {readDocumentDataOnce} from "~/scripts/FirebaseFirestore";
 import {auth} from "~/scripts/FirebaseAuth";
+import SearchModal from "~/components/modals/SearchModal.vue";
 
 const isShowLoginModal = ref(false);
+const isShowSearchModal = ref(false);
 const logoName = ref('');
 
 onBeforeMount(async () => {
@@ -28,7 +30,7 @@ function onClickCartButton() {
     <article class="inner">
       <nuxt-link class="skyvape-logo" to="/">{{logoName}}</nuxt-link>
       <div class="skyvape-func-menu">
-        <button>
+        <button @click="isShowSearchModal = !isShowSearchModal">
           <IconSearchBtn />
         </button>
         <button @click="onClickCartButton">
@@ -37,6 +39,7 @@ function onClickCartButton() {
       </div>
     </article>
     <UserLoginModal :isShowModal="isShowLoginModal" @close="isShowLoginModal = false" />
+    <SearchModal :isShowModal="isShowSearchModal" @close="isShowSearchModal = false" />
   </header>
 </template>
 

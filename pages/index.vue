@@ -4,17 +4,25 @@ import {readDocumentsDataOnce} from '~/scripts/FirebaseFirestore';
 import {DocumentData} from 'firebase/firestore';
 import {Swiper, SwiperSlide} from "vue-awesome-swiper";
 import "swiper/css/swiper.css";
+import NoticeBannerModal from "~/components/modals/NoticeBannerModal.vue";
+import UserLoginModal from "~/components/modals/UserLoginModal.vue";
+import firebase from "firebase/compat";
+import Timestamp = firebase.firestore.Timestamp;
 
+const isShowNoticeModal = ref(false);
 const listOfCategoryItems = ref([]),
-      listOfKeywordItems = ref([]),
-      listOfBestItems = ref([]);
+  listOfKeywordItems = ref([]),
+  listOfBestItems = ref([]),
+  listOfHotDealItems = ref([]);
 onMounted(async () => {
   const mainMenuData = await readDocumentsDataOnce('SETTING/MAIN_MENU/MENU_TEST_ITEM') as DocumentData[],
-        keywordsData = await readDocumentsDataOnce('SETTING/KEYWORDS/KEYWORD_TEST_LIST') as DocumentData[],
-        bestItemsData = await readDocumentsDataOnce('SETTING/PRODUCTS/PRODUCT_TEST_LIST') as DocumentData[];
+    keywordsData = await readDocumentsDataOnce('SETTING/KEYWORDS/KEYWORD_TEST_LIST') as DocumentData[],
+    bestItemsData = await readDocumentsDataOnce('SETTING/PRODUCTS/PRODUCT_TEST_LIST') as DocumentData[],
+    hotDealItemsData = await readDocumentsDataOnce('SETTING/HOTDEAL_PRODUCTS/HOTDEAL_PRODUCT_TEST_LIST') as DocumentData[];
   const mainMenuDataArr: never[] = [],
-        keywordsDataArr: never[] = [],
-        bestItemsDataArr: never[] = [];
+    keywordsDataArr: never[] = [],
+    bestItemsDataArr: never[] = [],
+    hotDealItemsDataArr: never[] = [];
   mainMenuData.forEach((item) => {
     mainMenuDataArr.push(item as never);
   });
@@ -23,6 +31,9 @@ onMounted(async () => {
   });
   bestItemsData.forEach((item) => {
     bestItemsDataArr.push(item as never);
+  });
+  hotDealItemsData.forEach((item) => {
+    hotDealItemsDataArr.push(item as never);
   });
   listOfCategoryItems.value = mainMenuDataArr.sort((a, b) => {
     if (a.menuNumber > b.menuNumber) return 1;
@@ -38,58 +49,103 @@ onMounted(async () => {
     if (a.productViewCount > b.productViewCount) return -1;
     if (a.productViewCount < b.productViewCount) return 1;
     return 0;
-  })
+  });
+  listOfHotDealItems.value = hotDealItemsDataArr.sort((a, b) => {
+    if (a.productEndDeal > b.productEndDeal) return 1;
+    if (a.productEndDeal < b.productEndDeal) return -1;
+    return 0;
+  });
   listOfKeywordItems.value = listOfKeywordItems.value.slice(0, 5);
   listOfBestItems.value = listOfBestItems.value.slice(0, 5);
   console.log(listOfCategoryItems.value);
 });
 
-  const swiperOptions = ref({
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullet'
-    },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    },
-    slidesPerView: 3,
-    breakpoints: {
-      375: {
-        slidesPerView: 4
-      },
-      425: {
-        slidesPerView: 5
-      },
-      640: {
-        slidesPerView: 6
-      },
-      1024: {
-        slidesPerView: 8
-      }
-    },
-    spaceBetween: '16'
-  });
+onMounted(async() => {
+  const resultNoticeModal = await getItemWithExpireTime("SHOW_NOTICE_MODAL");
+  if (resultNoticeModal) {
+    isShowNoticeModal.value = false;
+    return;
+  } else {
+    isShowNoticeModal.value = true;
+    return;
+  }
+})
 
-  const hotDealSwiperOptions = ref({
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullet'
+const swiperOptions = ref({
+  pagination: {
+    el: '.swiper-pagination',
+    type: 'bullet'
+  },
+  navigation: {
+    nextEl: '.swiper-button-next',
+    prevEl: '.swiper-button-prev',
+  },
+  slidesPerView: 3,
+  breakpoints: {
+    375: {
+      slidesPerView: 4
     },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
+    425: {
+      slidesPerView: 5
     },
-    slidesPerView: 'auto',
-    spaceBetween: '16'
-  });
+    640: {
+      slidesPerView: 6
+    },
+    1024: {
+      slidesPerView: 8
+    }
+  },
+  spaceBetween: '16'
+});
+
+const hotDealSwiperOptions = ref({
+  pagination: {
+    el: '.swiper-pagination',
+    type: 'bullet'
+  },
+  navigation: {
+    nextEl: '.swiper-button-next',
+    prevEl: '.swiper-button-prev',
+  },
+  slidesPerView: 'auto',
+  spaceBetween: '16'
+});
+
+function getItemWithExpireTime(keyName: string) {
+  const objString = window.localStorage.getItem(keyName);
+  if (!objString) {
+    return false;
+  }
+  const obj = JSON.parse(objString);
+  if (Date.now() > obj.expire) {
+    window.localStorage.removeItem(keyName);
+    return false;
+  }
+  return obj.value;
+}
+
+function getEndHotDealTime(date: Timestamp) {
+  const currentDate = new Date();
+  const endDate = date.toDate();
+  const diffMSec = endDate.getTime() - currentDate.getTime();
+  const diffDate = diffMSec / (24 * 60 * 60 * 1000);
+  const diffHour = (diffMSec % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000);
+  const diffMin = ((diffMSec % (24 * 60 * 60 * 1000)) % (60 * 60 * 1000)) / (60 * 1000);
+  const diffSec = (((diffMSec % (24 * 60 * 60 * 1000)) % (60 * 60 * 1000)) % (60 * 1000)) / 1000;
+  return {
+    date: Math.floor(diffDate),
+    hour: Math.floor(diffHour),
+    min: Math.floor(diffMin),
+    sec: Math.floor(diffSec)
+  };
+}
 </script>
 
 <template>
   <div class="wrapper">
     <TopBanner/>
     <BasePCHeader/>
-    <MainBanner />
+    <MainBanner/>
     <main>
       <article class="skyvape-index-category-article">
         <section>
@@ -100,8 +156,9 @@ onMounted(async () => {
           <div class="content-div">
             <Swiper class="swiper-container" :options="swiperOptions">
               <SwiperSlide class="swiper-slide" v-for="(menuItem, menuIndex) in listOfCategoryItems" :key="menuIndex">
-                <nuxt-link :to="menuItem.menuRoute" class="menu-item" :style="{backgroundImage: `url(${menuItem.menuImage})`}"></nuxt-link>
-                <p>{{menuItem.menuName}}</p>
+                <nuxt-link :to="menuItem.menuRoute" class="menu-item"
+                           :style="{backgroundImage: `url(${menuItem.menuImage})`}"></nuxt-link>
+                <p>{{ menuItem.menuName }}</p>
               </SwiperSlide>
               <div class="swiper-button-next"></div>
               <div class="swiper-button-prev"></div>
@@ -116,9 +173,10 @@ onMounted(async () => {
           </h1>
           <p>최근 많이 검색된 키워드를 살펴보세요!</p>
           <div class="content-div">
-            <div v-for="(item, index) in listOfKeywordItems" class="content-item-div" :key="index" @click="$nuxt.$router.push(`/search/${item.keywordName}`)">
+            <div v-for="(item, index) in listOfKeywordItems" class="content-item-div" :key="index"
+                 @click="$nuxt.$router.push(`/search/${item.keywordName}`)">
               <p>#</p>
-              <p>{{item.keywordName}} ({{item.keywordCount.toLocaleString()}})</p>
+              <p>{{ item.keywordName }} ({{ item.keywordCount.toLocaleString() }})</p>
             </div>
           </div>
         </section>
@@ -130,21 +188,22 @@ onMounted(async () => {
           </h1>
           <p>제일 잘 나가는 5가지의 상품을 보여드립니다!</p>
           <div class="content-div">
-            <details v-for="(bestItem, bestItemIndex) in listOfBestItems" class="content-item-div" :open="bestItemIndex === 0">
+            <details v-for="(bestItem, bestItemIndex) in listOfBestItems" class="content-item-div"
+                     :open="bestItemIndex === 0">
               <summary class="title-div">
-                <p class="title-index-text">{{bestItemIndex + 1}}</p>
-                <p class="title-text">{{bestItem.productName}}</p>
+                <p class="title-index-text">{{ bestItemIndex + 1 }}</p>
+                <p class="title-text">{{ bestItem.productName }}</p>
                 <div class="arrow">▶</div>
               </summary>
               <div class="content-div">
                 <div class="border-div"></div>
                 <div class="item-div" @click="$nuxt.$router.push(`/product/${bestItem.productId}`)">
-                  <div class="item-thumbnail" :style="{backgroundImage: `url(${bestItem.productThumbnail})`}"></div>
+                  <div class="item-thumbnail" :style="{backgroundImage: `url(${bestItem.productThumbnails[0]})`}"></div>
                   <div class="item-info-div">
-                    <p class="product-name-text">{{bestItem.productName}}</p>
-                    <p class="product-tag-text">{{bestItem.productTag.map(item => "#" + item).join(" ")}}</p>
-                    <p class="product-description-text">{{bestItem.productDescription}}</p>
-                    <p class="product-price-text">{{bestItem.productSellPrice.toLocaleString()}}원</p>
+                    <p class="product-name-text">{{ bestItem.productName }}</p>
+                    <p class="product-tag-text">{{ bestItem.productTag.map(item => "#" + item).join(" ") }}</p>
+                    <p class="product-description-text">{{ bestItem.productDescription }}</p>
+                    <p class="product-price-text">{{ bestItem.productSellPrice.toLocaleString() }}원</p>
                   </div>
                 </div>
               </div>
@@ -160,13 +219,22 @@ onMounted(async () => {
           <p>인기 상품을 최대 -50%의 가격으로 구매해보세요!</p>
           <div class="content-div">
             <Swiper class="swiper-container" :options="hotDealSwiperOptions">
-              <SwiperSlide class="swiper-slide" v-for="(item, index) in listOfCategoryItems" :key="index">
-                <nuxt-link :to="item.menuRoute" class="menu-item">
-                  <div class="product-thumbnail" :style="{backgroundImage: `url(${item.menuImage})`}">
-
+              <SwiperSlide class="swiper-slide" v-for="(item, index) in listOfHotDealItems" :key="index">
+                <nuxt-link :to="'/hotdeal-product/'+item.productId" class="menu-item">
+                  <div class="product-thumbnail" :style="{backgroundImage: `url(${item.productThumbnails[0]})`}">
+                    <div class="end-time-div">
+                      <p>
+                        {{getEndHotDealTime(item.productEndDeal).date}}일 {{getEndHotDealTime(item.productEndDeal).hour}}시간 {{getEndHotDealTime(item.productEndDeal).min}}분 {{getEndHotDealTime(item.productEndDeal).sec}}초 남음
+                      </p>
+                    </div>
+                    <div class="view-count-div">👀 {{item.productViewCount}}</div>
                   </div>
                   <div class="product-info">
-                    <p class="product-name">{{item.productName}}</p>
+                    <p class="product-name">{{ item.productName }}</p>
+                    <p class="product-price">{{item.productSellPrice.toLocaleString()}}원</p>
+                    <div class="product-color-div">
+                      <div class="product-color" v-for="(colorItem, colorIndex) in item.productRequireOptions" :key="colorIndex" :style="{backgroundColor: colorItem.productOptionColor}"></div>
+                    </div>
                   </div>
                 </nuxt-link>
               </SwiperSlide>
@@ -185,7 +253,7 @@ onMounted(async () => {
           <div class="content-div">
             <div v-for="item in ['다류', '도화', '김포루', 'Karo_Kim', '카누랜드', 'Kanablere']" class="content-item-div">
               <p>#</p>
-              <p>{{item}}</p>
+              <p>{{ item }}</p>
             </div>
           </div>
         </section>
@@ -199,7 +267,7 @@ onMounted(async () => {
           <div class="content-div">
             <div v-for="item in ['다류', '도화', '김포루', 'Karo_Kim', '카누랜드', 'Kanablere']" class="content-item-div">
               <p>#</p>
-              <p>{{item}}</p>
+              <p>{{ item }}</p>
             </div>
           </div>
         </section>
@@ -213,7 +281,7 @@ onMounted(async () => {
           <div class="content-div">
             <div v-for="item in ['다류', '도화', '김포루', 'Karo_Kim', '카누랜드', 'Kanablere']" class="content-item-div">
               <p>#</p>
-              <p>{{item}}</p>
+              <p>{{ item }}</p>
             </div>
           </div>
         </section>
@@ -227,7 +295,7 @@ onMounted(async () => {
           <div class="content-div">
             <div v-for="item in ['다류', '도화', '김포루', 'Karo_Kim', '카누랜드', 'Kanablere']" class="content-item-div">
               <p>#</p>
-              <p>{{item}}</p>
+              <p>{{ item }}</p>
             </div>
           </div>
         </section>
@@ -241,14 +309,15 @@ onMounted(async () => {
           <div class="content-div">
             <div v-for="item in ['다류', '도화', '김포루', 'Karo_Kim', '카누랜드', 'Kanablere']" class="content-item-div">
               <p>#</p>
-              <p>{{item}}</p>
+              <p>{{ item }}</p>
             </div>
           </div>
         </section>
       </article>
     </main>
     <BaseFooter/>
-    <MenuFAB />
+    <MenuFAB/>
+    <NoticeBannerModal :isShowModal="isShowNoticeModal" @close="isShowNoticeModal = false" />
   </div>
 </template>
 
@@ -277,6 +346,7 @@ main {
 
     &.skyvape-index-category-article {
       margin-top: 0;
+
       > section {
         > div > .swiper-container {
 
@@ -333,6 +403,7 @@ main {
           gap: 0.8rem;
           align-items: center;
           flex-wrap: wrap;
+
           > div {
             display: flex;
             align-items: center;
@@ -344,6 +415,7 @@ main {
 
             &:hover {
               background-color: var(--color-accent);
+
               > p {
                 color: black;
               }
@@ -364,18 +436,21 @@ main {
           display: flex;
           flex-direction: column;
           gap: 0.8rem;
+
           > details {
             border-radius: 0.8rem;
             width: 100%;
             height: auto;
             padding: 1.2rem 2rem;
             border: 0.2rem solid var(--color-border-hover);
+
             > .title-div {
               display: flex;
               align-items: center;
               gap: 0.8rem;
               font-size: 1.4rem;
               cursor: pointer;
+
               > .title-index-text {
                 font-weight: 700;
                 color: var(--color-accent);
@@ -401,6 +476,7 @@ main {
                 display: flex;
                 align-items: center;
                 gap: 1.6rem;
+
                 > .item-thumbnail {
                   aspect-ratio: 1 / 1;
                   width: 9.6rem;
@@ -474,13 +550,14 @@ main {
       > section {
         > div > .swiper-container {
           width: 100%;
+
           .swiper-button-next, .swiper-button-prev {
             width: 3.6rem;
             height: 3.6rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--color-background-mute);
+            background-color: var(--color-background-soft);
             border-radius: 50%;
 
             &::after {
@@ -495,14 +572,15 @@ main {
             height: auto;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             background-color: var(--color-background-mute);
             border-radius: 0.8rem;
             padding: 0.8rem;
 
             .menu-item {
-              display: block;
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;
               background-repeat: no-repeat;
               background-position: center;
               background-size: cover;
@@ -515,10 +593,66 @@ main {
                 background-position: center;
                 background-size: cover;
                 border-radius: 0.8rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: 0.8rem;
+
+                > .end-time-div {
+                  background-color: black;
+                  border-radius: 100rem;
+                  padding: 0 0.8rem;
+                  color: var(--color-accent);
+                  line-height: 2.4rem;
+                  text-align: center;
+                  font-weight: 700;
+                  font-size: 1rem;
+                }
+
+                > .view-count-div {
+                  background-color: rgba(0, 0, 0, 0.75);
+                  border-radius: 100rem;
+                  padding: 0 0.8rem;
+                  color: white;
+                  line-height: 2rem;
+                  width: fit-content;
+                  align-self: flex-end;
+                  font-weight: 500;
+                  font-size: 1rem;
+                }
               }
 
               > .product-info {
+                margin-top: 0.8rem;
 
+                > .product-name {
+                  font-size: 1.4rem;
+                  color: var(--color-text);
+                  font-weight: 500;
+                  display: -webkit-box;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  -webkit-line-clamp: 1;
+                }
+
+                > .product-price {
+                  font-size: 1.2rem;
+                  color: var(--color-accent);
+                  font-weight: 700;
+                }
+
+                > .product-color-div {
+                  margin-top: 0.8rem;
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 0.2rem;
+
+                  > .product-color {
+                    width: 0.8rem;
+                    height: 0.8rem;
+                    border-radius: 50%;
+                  }
+                }
               }
             }
 

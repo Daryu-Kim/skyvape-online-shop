@@ -148,7 +148,7 @@ onBeforeMount(async () => {
 
 <style scoped lang="scss">
 .base-dashboard-header-wrapper {
-  width: 24rem;
+  width: 24rem !important;
   border-right: 0.2rem solid var(--color-border-hover);
 
   > aside {

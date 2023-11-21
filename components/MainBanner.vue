@@ -57,13 +57,13 @@ function onClickMainBanner() {
 
 @media screen and (max-width: 767px) {
   .swiper-container {
-    height: 24rem;
+    aspect-ratio: 1920 / 640;
   }
 }
 
 @media screen and (min-width: 768px) {
   .swiper-container {
-    height: 28rem;
+    aspect-ratio: 1920 / 480;
   }
 }
 </style>

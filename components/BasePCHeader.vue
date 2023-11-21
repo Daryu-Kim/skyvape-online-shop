@@ -57,7 +57,7 @@ header {
       font-weight: 900;
       color: white;
       top: 50%;
-      left: 2.4rem;
+      left: 3.6rem;
       transform: translateY(-50%);
     }
     > .inner > .skyvape-menu {
@@ -70,7 +70,7 @@ header {
     > .inner > .skyvape-func-menu {
       position: absolute;
       top: 50%;
-      right: 2.4rem;
+      right: 3.6rem;
       transform: translateY(-50%);
       display: flex;
       align-items: center;

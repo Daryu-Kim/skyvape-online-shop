@@ -79,9 +79,18 @@ function onChangeOption(index: number) {
     <main>
       <article class="skyvape-product-summary-article">
         <section>
+          <Swiper class="mobile" :options="swiperOptions">
+            <SwiperSlide class="swiper-slide" v-for="(slide, index) in listOfItemData.productThumbnails" :key="index"
+                         :style="{backgroundImage: `url(${slide})`}">
+            </SwiperSlide>
+            <div class="swiper-pagination" slot="pagination"></div>
+          </Swiper>
+        </section>
+        <section>
           <div>
             <h1>{{listOfItemData.productName}}</h1>
             <h2>{{listOfItemData.productDescription}}</h2>
+            <del>{{listOfItemData.productOriginPrice}}원</del>
             <p>{{listOfItemData.productSellPrice}}원</p>
           </div>
           <div>
@@ -108,6 +117,11 @@ function onChangeOption(index: number) {
           </div>
         </section>
       </article>
+      <article class="skyvape-product-detail-article">
+        <section>
+          <img v-for="(item, index) in listOfItemData.productDetail" :src="item" />
+        </section>
+      </article>
     </main>
     <BaseFooter />
     <UserLoginModal :isShowModal="isShowLoginModal" @close="isShowLoginModal = false" />
@@ -130,6 +144,38 @@ function onChangeOption(index: number) {
   background-position: center;
 }
 main {
+  > article {
+
+    &.skyvape-product-summary-article {
+      display: flex;
+
+      > section {
+        flex: 1;
+        > .swiper-container {
+          width: 100%;
+          aspect-ratio: 1 / 1;
+
+          .swiper-slide {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+          }
+        }
+      }
+    }
+
+    &.skyvape-product-detail-article {
+
+      > section {
+        display: flex;
+        flex-direction: column;
+
+        > img {
+          width: 100%;
+        }
+      }
+    }
+
+  }
   > article:nth-child(1) {
     margin-top: 0;
   }
